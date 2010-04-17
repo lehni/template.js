@@ -4,7 +4,7 @@
  *
  * Template.js is released under the MIT license
  * http://dev.helma.org/Wiki/JavaScript+Template+Engine/
- * http://bootstrap-js.net/ 
+ * http://bootstrap-js.net/
  */
 
 /**
@@ -153,7 +153,7 @@ Template.prototype = {
 #else // !BROWSER
 		// We can rely on __proto__ for simple and very fast inheritance.
 		// But if object already inherits from something else, we need to
-		// clone it first. This happens pretty rarely, so this is all in 
+		// clone it first. This happens pretty rarely, so this is all in
 		// all much faster than the above.
 		if (object.__proto__ !== Object.prototype) {
 			var obj = {};
@@ -229,7 +229,7 @@ Template.prototype = {
 #ifdef RHINO
 						code.push('out.write(' + uneval(part) + ');');
 #else // !RHINO
-						// Do not rely on uneval on the client side, although it's 
+						// Do not rely on uneval on the client side, although it's
 						// there on some browsers...
 						// Unfortunatelly, part.replace(/["'\n\r]/mg, "\\$&") does
 						// not work on Safari. TODO: Report bug:
@@ -371,7 +371,7 @@ Template.prototype = {
 					start = pos;
 					continue;
 				} else if ((ch == '=' || ch == '|') && content[pos + 1] != ch) {  // Named parameter / filter
-					// The check above discovers || as a logical parameter and does not 
+					// The check above discovers || as a logical parameter and does not
 					// count the first | as a single item.
 					// Named parameters and start of filters can be handled the same
 					// as the sign itself is included, and nothing else needs to be done
@@ -386,7 +386,7 @@ Template.prototype = {
 						else ch = null;
 					}
 					if (ch) {
-						// find the end, using regexps. 
+						// find the end, using regexps.
 						var close = ({ '(': ')', '[': ']', '{': '}', '<%': '%>' })[ch], open = null;
 						var search = ({ '(': /[()]/g, '[': /[\[\]]/g, '{': /[{}]/g,
 								'<%': /<%|%>/g, '"': /"/g, "'": /'/g })[ch];
@@ -405,7 +405,7 @@ Template.prototype = {
 						else pos = content.length;
 						return getPart();
 					}
-				} 
+				}
 				// skip to the the next interesting position:
 				var next = /[\s=|"'([{<]/g;
 				next.lastIndex = pos + 1;
@@ -433,7 +433,7 @@ Template.prototype = {
 					// and prepend with the right data source:
 					return {
 						response: 'res.data',
-						request: 'req.data', 
+						request: 'req.data',
 						session: 'session.data',
 						param: 'param',
 						properties: 'app.properties'
@@ -491,9 +491,9 @@ Template.prototype = {
 					macro.isControl = allowControls && /^(foreach|begin|if|elseif|else|end)$/.test(next);
 					// Is this a data macro?
 					macro.isData = isEqualTag;
-					macro.isSetter = !isEqualTag && next[0] == '$'; 
+					macro.isSetter = !isEqualTag && next[0] == '$';
 					if (macro.isSetter) {
-						// If there was no whitespace between variable name and equals, 
+						// If there was no whitespace between variable name and equals,
 						// we need to manually move the = sign to opcode
 						var match = next.match(/(\$\w*)=$/);
 						if (match) {
@@ -815,7 +815,7 @@ Template.prototype = {
 		}
 		if (toString) {
 			if (postProcess) {
-				// This is needed for nested macros. Insert out.push() before the 
+				// This is needed for nested macros. Insert out.push() before the
 				// rendering code and return out.pop(). Due to the post processing
 				// we cannot simply return a variable...
 				code.splice(codeIndexBefore, 0,			'out.push();');
@@ -964,7 +964,7 @@ Template.prototype = {
 						if (value !== undefined)
 							return value;
 					}
-				} 
+				}
 			} catch (e) {
 				this.reportMacroError(e, command, out);
 			}
@@ -1080,7 +1080,7 @@ Template.prototype = {
 		if (container) {
 			this.resource = container.getResource(this.resourceName);
 			if (!this.resource)
-				throw 'Cannot find template "' + this.resourceName + '" in "' + 
+				throw 'Cannot find template "' + this.resourceName + '" in "' +
 					(container._prototype ? container._prototype : container) + '".';
 			this.lastModified = 0; // force compile
 			this.tags = null;
@@ -1224,7 +1224,7 @@ Function.prototype.renderTemplate = function(template, param, out) {
 #else // !HELMA
 
 /**
- * A dictionary with methods that can be injected into any prototype to 
+ * A dictionary with methods that can be injected into any prototype to
  * get templating functionality.
  *
  * Set Template.directory to the place where you keep your templates.

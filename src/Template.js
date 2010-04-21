@@ -1017,13 +1017,6 @@ Template.prototype = {
 			this.macroParam = 0;
 			var lines;
 			if  (this.resource) {
-#ifdef HIDDEN
-			 	var content = this.resource.getContent(app.properties.skinCharset);
-			 	// Store the original lines:
-			 	var lines = content.split(/\r\n|\n|\r/mg);
-#endif // HIDDEN
-				// Use java.io.BufferedReader for reading the lines into a line array,
-				// as this is much faster than the regexp above
 #ifdef HELMA
 				var charset = app.properties.skinCharset;
 				var reader = new java.io.BufferedReader(

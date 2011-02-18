@@ -16,7 +16,7 @@
  * added manually, or Template.js need to be changed.
  */
 
-#ifndef HELMA
+//#ifndef HELMA
 
 // Retrieve a reference to the global scope.
 global = this;
@@ -45,7 +45,7 @@ TemplateWriter.prototype = {
 	}
 }
 
-#endif // !HELMA
+//#endif // !HELMA
 
 /**
  * Constructor
@@ -56,8 +56,8 @@ TemplateWriter.prototype = {
  */
 function Template(object, name, parent) {
 	if (object) {
-#ifdef RHINO
-#ifdef HELMA
+//#ifdef RHINO
+//#ifdef HELMA
 		if (object instanceof File)
 			object = new java.io.File(object.getPath());
 		if (object instanceof java.io.File) {
@@ -67,7 +67,7 @@ function Template(object, name, parent) {
 			this.resource = new Packages.helma.framework.repository.FileResource(object);
 			this.resourceName = this.resource.getShortName();
 			this.pathName = this.resource.getName();
-#else // !HELMA
+//#else // !HELMA
 		if (object instanceof java.io.File) {
 			// Add getInputStream to java.io.File object.
 			object.getInputStream = function() {
@@ -76,23 +76,23 @@ function Template(object, name, parent) {
 			this.resource = object;
 			this.resourceName = object.getName();
 			this.pathName = object.getPath();
-#endif // !HELMA
+//#endif // !HELMA
 		} else if (typeof object == 'string') {
 			this.content = object;
 			this.resourceName = name ? name : 'string';
 			this.pathName = this.resourceName;
-#ifdef HELMA
+//#ifdef HELMA
 		} else {
 			this.resourceContainer = object;
 			this.resourceName = name + '.jstl';
 			this.findResource();
-#endif // HELMA
+//#endif // HELMA
 		}
-#else // !RHINO
+//#else // !RHINO
 		this.content = object;
 		this.resourceName = name ? name : 'string';
 		this.pathName = this.resourceName;
-#endif // !RHINO
+//#endif // !RHINO
 		if (parent) {
 			parent.subTemplates[name] = this;
 			this.parent = parent;
@@ -108,13 +108,13 @@ Template.prototype = {
 		try {
 			// If out is null, render to a string and return it
 			var asString = !out;
-#ifdef HELMA
+//#ifdef HELMA
 			if (asString)
 				(out = res).push();
-#else // !HELMA
+//#else // !HELMA
 			if (asString)
 				(out = new TemplateWriter()).push();
-#endif // !HELMA
+//#endif // !HELMA
 			this.__render__.call(object, param, this, out);
 			if (asString)
 				return out.pop();
@@ -131,7 +131,7 @@ Template.prototype = {
 	},
 
 	inherit: function(object, parent) {
-#ifdef RHINO
+//#ifdef RHINO
 		// Convert to native JS since apparently we cannot inherit from java objects
 		if (parent instanceof java.util.Map) {
 			var obj = {};
@@ -139,8 +139,8 @@ Template.prototype = {
 				obj[i] = parent[i];
 			parent = obj;
 		}
-#endif // RHINO
-#ifdef BROWSER
+//#endif // RHINO
+//#ifdef BROWSER
 		// As IE does not natively support __proto__, copy things over here
 		// Create an object inheriting fields from parent
 		function inherit() {};
@@ -150,7 +150,7 @@ Template.prototype = {
 		for (var i in object)
 			obj[i] = object[i];
 		return obj;
-#else // !BROWSER
+//#else // !BROWSER
 		// We can rely on __proto__ for simple and very fast inheritance.
 		// But if object already inherits from something else, we need to
 		// clone it first. This happens pretty rarely, so this is all in
@@ -163,7 +163,7 @@ Template.prototype = {
 		}
 		object.__proto__ = parent;
 		return object;
-#endif // !BROWSER
+//#endif // !BROWSER
 	},
 
 	/**
@@ -226,15 +226,15 @@ Template.prototype = {
 					if (templateTag)
 						templateTag.buffer.push(part);
 					else // Encodes by escaping ",',\n,\r
-#ifdef RHINO
+//#ifdef RHINO
 						code.push('out.write(' + uneval(part) + ');');
-#else // !RHINO
+//#else // !RHINO
 						// Do not rely on uneval on the client side, although it's
 						// there on some browsers...
 						// Unfortunatelly, part.replace(/["'\n\r]/mg, "\\$&") does
 						// not work on Safari. TODO: Report bug:
 						code.push('out.write("' + part.replace(/(["'\n\r])/mg, '\\$1') + '");');
-#endif // !RHINO
+//#endif // !RHINO
 				}
 				buffer.length = 0;
 			}
@@ -419,7 +419,7 @@ Template.prototype = {
 			}
 		}
 
-#ifdef HELMA
+//#ifdef HELMA
 		function parseParam(param) {
 			// Support for old-style data access in Helma
 			var data = param.match(/^(param|response|request|session|properties)\.(.*)$/);
@@ -444,7 +444,7 @@ Template.prototype = {
 			}
 			return param;
 		}
-#endif // HELMA
+//#endif // HELMA
 
 		// TODO: macro is not the right name here, as it is also filters: functional units between |...
 		var macros = [], macro = null, isMain = true;
@@ -500,7 +500,7 @@ Template.prototype = {
 							macro.command = match[1];
 							macro.hasEquals = true;
 						}
-#ifdef HELMA
+//#ifdef HELMA
 					} else if (!isEqualTag) {
 						// If parseParam produces a result different from macro.command,
 						// we are using a pseudo parameter which is data as well:
@@ -508,7 +508,7 @@ Template.prototype = {
 						// Tell the parseMacro code to simply output the value
 						macro.isData = param != macro.command;
 						macro.command = param;
-#endif // HELMA
+//#endif // HELMA
 					}
 				}
 			}
@@ -531,11 +531,11 @@ Template.prototype = {
 					throw 'Syntax error: ' + nested;
 				}
 			}
-#ifdef HELMA
+//#ifdef HELMA
 			return macro.isSetter ? value : parseParam(value);
-#else // !HELMA
+//#else // !HELMA
 			return value;
-#endif // !HELMA
+//#endif // !HELMA
 		}
 
 		// Now do the main parsing of the parts
@@ -667,11 +667,11 @@ Template.prototype = {
 					macro.variable = variable;
 					code.push(						'var ' + list + ' = ' + value + '; ',
 													'if (' + list + ') {',
-#ifdef HELMA
+//#ifdef HELMA
 						// The check for HopObject is only necessary if it's a
 						// variable reference and not an explicit string / array / etc.
 						!(/^["'[]/.test(value))	?	'	if (' + list + ' instanceof HopObject) ' + list + ' = ' + list + '.list();' : null,
-#endif // HELMA
+//#endif // HELMA
 						// TODO: finish toList support!
 						// Problem: There is currently no easy way to retrieve the key for values...
 						// Possibilities: Store pairs as { key: , value: } in toList...
@@ -747,7 +747,7 @@ Template.prototype = {
 				code.push(							'var ' + macro.command + ' = ' + this.parseLoopVariables(macro.unnamed.join(''), stack) + ';');
 			} else {
 				var object = macro.object;
-#ifdef HELMA
+//#ifdef HELMA
 				// At runtime, first determine the object.
 				// it might be a res.handler.
 				if (!/^(global|this|root)$/.test(object))
@@ -759,7 +759,7 @@ Template.prototype = {
 				else
 					code.push(						'var obj = ' + object + ';');
 				object = 'obj';
-#endif // HELMA
+//#endif // HELMA
 				// If the macro tag defines the swallow sign (-%>), set postProcess to true and call trim on the resulting string
 				postProcess = postProcess | macro.swallow;
 				// Macros can both write to res and return a value. prefix / suffix / filter applies to both,
@@ -977,12 +977,12 @@ Template.prototype = {
 		var message = error.message || error;
 		if (tag && tag.content) {
 			message += ' (' + error.fileName + '; line ' + tag.lineNumber + ': ' +
-#ifdef HELMA
+//#ifdef HELMA
 				encode(tag.content) + ')';
-#else // !HELMA
+//#else // !HELMA
 				// TODO: How to handle encode on server / client side?
 				tag.content + ')';
-#endif // !HELMA
+//#endif // !HELMA
 		} else if (error.fileName) {
 			message += ' (' + error.fileName + '; line ' + error.lineNumber + ')';
 		}
@@ -1013,20 +1013,20 @@ Template.prototype = {
 	 */
 	compile: function() {
 		try {
-#ifdef RHINO
+//#ifdef RHINO
 			this.macroParam = 0;
 			var lines;
 			if  (this.resource) {
-#ifdef HELMA
+//#ifdef HELMA
 				var charset = app.properties.skinCharset;
 				var reader = new java.io.BufferedReader(
 					charset ? new java.io.InputStreamReader(this.resource.getInputStream(), charset) :
 						new java.io.InputStreamReader(this.resource.getInputStream())
 				);
-#else // !HELMA
+//#else // !HELMA
 				var reader = new java.io.BufferedReader(
 					new java.io.InputStreamReader(this.resource.getInputStream()));
-#endif // !HELMA
+//#endif // !HELMA
 				lines = [];
 				var line;
 				while ((line = reader.readLine()) != null)
@@ -1038,33 +1038,33 @@ Template.prototype = {
 			} else {
 				lines = [];
 			}
-#else // !RHINO
+//#else // !RHINO
 			var lines = this.content.split(/\r\n|\n|\r/mg);
-#endif // !RHINO
+//#endif // !RHINO
 			this.subTemplates = {};
 			// Keep a reference to all sub templates to be
 			// rendered into variable names (as defined by <% $name %> tags...)
 			this.renderTemplates = [];
 			var code = this.parse(lines);
 			// Now evalute the template code.
-#ifdef RHINO
+//#ifdef RHINO
 			// This sets this.__render__ to the generated function
 			// don't use eval() but Rhino's evaluateString instead, because this
 			// throws propper traceable exceptions if something goes wrong.
 			var cx = Packages.org.mozilla.javascript.Context.getCurrentContext();
 			cx.evaluateString(this, code, this.pathName, 0, null);
-#else // !RHINO
+//#else // !RHINO
 			eval(code);
-#endif // !RHINO
+//#endif // !RHINO
 		} catch (e) {
 			this.throwError(e);
 		}
-#ifdef HELMA
+//#ifdef HELMA
 		this.lastChecked = Date.now();
-#endif // !HELMA
+//#endif // !HELMA
 	},
 
-#ifdef HELMA
+//#ifdef HELMA
 	/**
 	 * Tries to find the resource in resourceContainer.
 	 */
@@ -1096,7 +1096,7 @@ Template.prototype = {
 				this.compile();
 		}
 	},
-#endif // HELMA
+//#endif // HELMA
 
 	/**
 	 * Reports a template error and prints the line causing the error
@@ -1109,16 +1109,16 @@ Template.prototype = {
 			throw error;
 		if (tag) {
 		 	message += ', line: ' + (tag.lineNumber + 1) + ', in ' +
-#ifdef HELMA
+//#ifdef HELMA
 		 		encode(tag.content);
 			// Encode errors, as they are passed through to Jetty and appear
 			// garbled otherwise
-#else // !HELMA
+//#else // !HELMA
 				tag.content;
-#endif // !HELMA
+//#endif // !HELMA
 		}
 		if (error) {
-#ifdef RHINO
+//#ifdef RHINO
 			var details = null;
 			if (error.fileName && error.fileName != this.pathName) {
 				details = 'Error in ' + error.fileName + ', line ' +
@@ -1134,9 +1134,9 @@ Template.prototype = {
 			}
 			if (details)
 				message += ': ' + details;
-#else // !RHINO
+//#else // !RHINO
 			message += ': ' + error;
-#endif // !RHINO
+//#endif // !RHINO
 		}
 		throw message;
 	},
@@ -1156,13 +1156,13 @@ Template.prototype = {
 	}
 }
 
-#ifdef RHINO
+//#ifdef RHINO
 Template.lineBreak = java.lang.System.getProperty('line.separator');
-#else // !RHINO
+//#else // !RHINO
 Template.lineBreak = '\n';
-#endif // !RHINO
+//#endif // !RHINO
 
-#ifdef HELMA
+//#ifdef HELMA
 
 getTemplate = HopObject.prototype.getTemplate = function(template) {
 	var name = template;
@@ -1214,7 +1214,7 @@ Function.prototype.renderTemplate = function(template, param, out) {
 }
 */
 
-#else // !HELMA
+//#else // !HELMA
 
 /**
  * A dictionary with methods that can be injected into any prototype to
@@ -1250,11 +1250,11 @@ Template.methods = new function() {
 			}
 			if (!template)
 				template = templates[name] = new Template(
-#ifdef RHINO
+//#ifdef RHINO
 					new java.io.File(Template.directory, name + '.jstl'));
-#else // !RHINO
+//#else // !RHINO
 					name);
-#endif // !RHINO
+//#endif // !RHINO
 			return template;
 		},
 
@@ -1266,4 +1266,4 @@ Template.methods = new function() {
 	};
 };
 
-#endif // !HELMA
+//#endif // !HELMA

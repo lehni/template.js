@@ -1,10 +1,10 @@
 /**
  * JavaScript Template Engine
- * (c) 2005 - 2010, Juerg Lehni, http://www.scratchdisk.com
+ * (c) 2005-2011, Juerg Lehni, http://lehni.org
  *
  * Template.js is released under the MIT license
  * http://dev.helma.org/Wiki/JavaScript+Template+Engine/
- * http://bootstrap-js.net/
+ * http://bootstrapjs.org/
  */
 
 /**

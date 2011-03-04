@@ -19,7 +19,7 @@
 //#ifndef HELMA
 
 // Retrieve a reference to the global scope.
-global = this;
+var global = this;
 
 // Define TemplateWriter that mimics Helma's ResponseTrans
 function TemplateWriter() {
@@ -1164,7 +1164,7 @@ Template.lineBreak = '\n';
 
 //#ifdef HELMA
 
-getTemplate = HopObject.prototype.getTemplate = function(template) {
+var getTemplate = HopObject.prototype.getTemplate = function(template) {
 	var name = template;
 	if (!(template instanceof Template)) {
 		// Handle sub templates:
@@ -1200,7 +1200,7 @@ getTemplate = HopObject.prototype.getTemplate = function(template) {
 /**
  * HopObject's renderTemplate function that is to be used from Helma.
  */
-renderTemplate = HopObject.prototype.renderTemplate = function(template, param, out) {
+var renderTemplate = HopObject.prototype.renderTemplate = function(template, param, out) {
 	template = this.getTemplate(template);
 	if (template)
 		return template.render(this, param, out);

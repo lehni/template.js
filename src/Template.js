@@ -1223,13 +1223,15 @@ var renderTemplate = HopObject.prototype.renderTemplate = function(template, par
 		return template.render(this, param, out);
 }
 
-/* TODO: reconsider this for rendering through HopObject constructors:
+/**
+ * Allow rendering of templates through static HopObject.renderTemplate calls
+ * on any protoype
+ */
 Function.prototype.renderTemplate = function(template, param, out) {
-	if (!this.instance)
-		this.instance = new this();
-	return this.instance.renderTemplate(template, param, out);
+	if (!this._renderInstance)
+		this._renderInstance = new this(this.dont);
+	return this._renderInstance.renderTemplate(template, param, out);
 }
-*/
 
 //#else // !HELMA
 

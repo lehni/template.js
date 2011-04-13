@@ -872,8 +872,11 @@ Template.prototype = {
 			// If the tag ends with -%>, trim the whole content.
 			// If it does not end with +%>, cut away first and last empty line:
 			// If it ends with +%>, keep the whitespaces.
-			if (!end) content = content.match(/^\s*[\n\r]?([\u0000-\uffff]*)[\n\r]?\s*$/)[1];
-			else if (end == '-') content = content.trim();
+			content = !end
+				? content.match(/^\s*?[\n\r]?([\u0000-\uffff]*)[\n\r]?\s*$/)[1]
+				: end == '-'
+					? content.trim()
+					: content;
 			new Template(content, name, this);
 			// If it is a variable, push it onto renderTemplates, so it is
 			// rendered at the beginning of the generated render function.

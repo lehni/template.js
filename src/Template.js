@@ -656,26 +656,29 @@ Template.prototype = {
 					var variable = match[1], value = match[2];
 					// separator means post processing too:
 					postProcess = postProcess || !!values.separator;
-					var suffix = '_' + (this.listId++);
-					var list = 'list' + suffix, length = 'length' + suffix;
-					var index = 'i' + suffix, first = 'first' + suffix;
+					var suffix = '_' + (this.listId++),
+						list = 'list' + suffix, length = 'length' + suffix,
+						index = 'i' + suffix, first = 'first' + suffix,
+						keys = 'keys' + suffix;
 					// Use stacks per variable name, in case two loops use the same variable name
 					var loopStack = stack.loop[variable] = stack.loop[variable] || [];
-					loopStack.push({ list: list, index: index, length: length, first: first });
+					loopStack.push({ list: list, index: index, length: length, keys: keys, first: first });
 					// Store variable in macro, so it can be retrieved from
 					// the control stack in 'end'.
 					macro.variable = variable;
-					code.push(						'var ' + list + ' = ' + value + '; ',
+					code.push(						'var ' + list + ' = ' + value + ', ' + keys + ';',
 													'if (' + list + ') {',
 //#ifdef HELMA
 						// The check for HopObject is only necessary if it's a
 						// variable reference and not an explicit string / array / etc.
 						!(/^["'[]/.test(value))	?	'	if (' + list + ' instanceof HopObject) ' + list + ' = ' + list + '.list();' : null,
 //#endif // HELMA
-						// TODO: finish toList support!
-						// Problem: There is currently no easy way to retrieve the key for values...
-						// Possibilities: Store pairs as { key: , value: } in toList...
-													'	if (' + list + '.length == undefined) ' + list + ' = template.toList(' + list + ');',
+						// Support key values in hash lists by storing them in a seperate structure, see #toList()
+												'	if (' + list + '.length == undefined) {',
+												'		var list = template.toList(' + list + ');',
+												'		' + list + ' = list.list;',
+												'		' + keys + ' = list.keys;',
+												'	}',
 													'	var ' + length + ' = ' + list + '.length' + (values.separator ? ', ' + first + ' = true' : '') + ';',
 													'	for (var ' + index + ' = 0; ' + index + ' < ' + length + '; ' + index + '++) {',
 													'		var ' + variable + ' = ' + list + '[' + index + '];',
@@ -846,6 +849,7 @@ Template.prototype = {
 				switch (suffix) {
 				case 'index': return loop.index;
 				case 'length': return loop.length;
+				case 'key': return loop.keys + ' && ' + loop.keys + '[' + loop.index + ']';
 				case 'first': return '(' + loop.index + ' == 0)';
 				case 'last': return '(' + loop.index + ' == ' + loop.length + ' - 1)';
 				case 'even': return '((' + loop.index + ' & 1) == 0)';
@@ -996,15 +1000,25 @@ Template.prototype = {
 	 * TODO: consider creating a MICRO version with less features for browser.
 	 */
 	toList: function(obj) {
-		var ret = [];
+		var list = [], keys = [];
 		// Support for .each, where Bootstrap is loaded and a plain for-in loop
 		// not supported any longer.
-		// TODO: consider moving to Bootstrap completely!
-		if (obj.each)
-			obj.each(function(v) { ret.push(v); });
-		else
-			for (var i in obj) { ret.push(obj[i]); }
-		return ret;
+		// TODO: consider moving to Bootstrap completely?
+		if (obj.each) {
+			obj.each(function(val, key) {
+				list.push(val);
+				keys.push(key);
+			});
+		} else {
+			for (var key in obj) {
+				list.push(obj[key]);
+				keys.push(key);
+			}
+		}
+		return {
+			list: list,
+			keys: keys
+		};
 	},
 
 	/**

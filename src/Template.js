@@ -42,7 +42,7 @@ TemplateWriter.prototype = {
 		this.current = this.buffers.pop();
 		return res;
 	}
-}
+};
 /*#*/ } // !options.helma
 
 /**
@@ -79,7 +79,7 @@ function Template(object, name, parent) {
 			// Add getInputStream to java.io.File object.
 			object.getInputStream = function() {
 				return new java.io.FileInputStream(this);
-			}
+			};
 			this.resource = object;
 			this.resourceName = object.getName();
 			this.pathName = object.getPath();
@@ -1144,7 +1144,7 @@ Template.prototype = {
 		if (this.tags && e.lineNumber && e.fileName == this.pathName)
 			return this.getTagFromCodeLine(e.lineNumber);
 	}
-}
+};
 
 /*#*/ if (options.helma) {
 /**
@@ -1161,7 +1161,7 @@ Template.prototype.findResource = function() {
 		this.tags = null;
 		this.pathName = this.resource.getName();
 	}
-}
+};
 
 /**
  * Checks the resource's lastModified value and compiles again
@@ -1177,7 +1177,7 @@ Template.prototype.checkResource = function() {
 		if  (this.lastModified != this.resource.lastModified())
 			this.compile();
 	}
-}
+};
 /*#*/ } // options.helma
 /*#*/ if (options.rhino) {
 Template.lineBreak = java.lang.System.getProperty('line.separator');
@@ -1226,7 +1226,7 @@ var renderTemplate = HopObject.prototype.renderTemplate = function(template, par
 	template = this.getTemplate(template);
 	if (template)
 		return template.render(this, param, out);
-}
+};
 
 /**
  * Allow rendering of templates through static HopObject.renderTemplate calls
@@ -1236,7 +1236,7 @@ Function.prototype.renderTemplate = function(template, param, out) {
 	if (!this._renderInstance)
 		this._renderInstance = new this(this.dont);
 	return this._renderInstance.renderTemplate(template, param, out);
-}
+};
 /*#*/ } else { // !options.helma
 
 /**

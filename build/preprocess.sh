@@ -1,47 +1,34 @@
+#!/bin/sh
+
 # Bootstrap JavaScript Library
 # (c) 2006 - 2010 Juerg Lehni, http://lehni.org/
 #
 # Bootstrap is released under the MIT license
 # http://bootstrapjs.org/
 #
-# preprocess.sh
-#
-# A simple code preprocessing wrapper that uses a combination of cpp, jssrip.py
-# and sed to preprocess JavaScript files containing C-style preprocess macros
-# (//#include, //#ifdef, etc.). Three options offer control over wether comments
-# are preserved or stripped and whitespaces are compressed.
-#
 # Usage:
-# preprocess.sh SOURCE DESTINATION ARGUMENTS MODE
+# preprocess.sh MODE SOURCE DESTINATION ARGUMENTS
 #
 # ARGUMENTS:
-#	e.g. "-DBROWSER -DECMASCRIPT_3"
+#	e.g. "-DBROWSER"
 #
 # MODE:
-#	commented		Preprocessed but still formated and commented (default)
+#	commented		Preprocessed but still formatted and commented
 #	stripped		Formated but without comments
-#	compressed		No comments and no whitespaces
-#	compiled		Uses Google Closure Compiler to reduce file size even more
+#	compressed		Uses UglifyJS to reduce file size
 
-KEYWORD="//#"
+COMMAND="./prepro.js -d '$4' $2"
 
-case $4 in
+case $1 in
 	stripped)
-		./filepp.pl -kc $KEYWORD $3 $1 | ./jsstrip.pl -w -q | sed -n '/^[ 	][ 	]*$/d
-			/./,/^$/!d
-			p' > $2
-		;;
-	compressed)
-		./filepp.pl -kc $KEYWORD $3 $1 | ./jsstrip.pl -q > $2
+		eval "$COMMAND -c" > $3
 		;;
 	commented)
-		./filepp.pl -kc $KEYWORD $3 $1 | sed -n '/^[ 	][ 	]*$/d
-			/./,/^$/!d
-			p' > $2
+		eval $COMMAND > $3
 		;;
-	compiled)
-		./filepp.pl -kc $KEYWORD $3 $1 > temp.js
-		java -jar compiler.jar --js temp.js --js_output_file $2
+	compressed)
+		eval $COMMAND > temp.js
+		../../uglifyjs/bin/uglifyjs temp.js --extra --unsafe --reserved-names "$eval,$sign" > $3
 		rm temp.js
 		;;
 esac

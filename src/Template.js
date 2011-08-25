@@ -44,6 +44,9 @@ TemplateWriter.prototype = {
 	}
 };
 /*#*/ } // !options.helma
+/*#*/ if (options.node) {
+var fs = require('fs');
+/*#*/ } // options.node
 
 /**
  * Constructor
@@ -89,7 +92,24 @@ function Template(object, name, parent) {
 			this.pathName = this.resourceName;
 		}
 /*#*/ } // options.helma
-/*#*/ } else { // !options.rhino
+/*#*/ } else if (options.node) {
+		if (name) {
+			this.content = object;
+			this.resourceName = name;
+		} else {
+			this.content = fs.readFileSync(object, 'utf8');
+			this.resourceName = object;
+			var that = this;
+			fs.watchFile(object, function(cur, prev) {
+				// Recompile the template, whenever the file is modified:
+				if (cur.mtime.getTime() != prev.mtime.getTime()) {
+					that.content = fs.readFileSync(object, 'utf8');
+					that.compile();
+				}
+			});
+		}
+		this.pathName = this.resourceName;
+/*#*/ } else { // !options.node && !options.rhino
 		this.content = object;
 		this.resourceName = name ? name : 'string';
 		this.pathName = this.resourceName;
@@ -1290,3 +1310,11 @@ Template.methods = new function() {
 	};
 };
 /*#*/ } // !options.helma
+/*#*/ if (options.node) {
+	exports.Template = Template;
+	exports.TemplateWriter = TemplateWriter;
+	
+	require.extensions['.jstl'] = function(module, uri) {
+		module.exports = Template.methods.getTemplate(uri);
+	};
+/*#*/ }

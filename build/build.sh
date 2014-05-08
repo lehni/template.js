@@ -19,8 +19,7 @@
 # MODE:
 #	commented		Preprocessed but still formated and commented (default)
 #	stripped		Formated but without comments
-#	compressed		No comments and no whitespaces
-#	compiled		Uses Google Closure Compiler to reduce file size even more
+#	compressed		Uses UglifyJS to reduce file size
 
 if [ $# -eq 0 ]
 then
@@ -35,6 +34,6 @@ then
 	mkdir ../out/
 fi
 
-./preprocess.sh ../src/Template.js ../out/Template-helma.js "-DRHINO -DHELMA" $MODE
-./preprocess.sh ../src/Template.js ../out/Template-rhino.js "-DRHINO" $MODE
-./preprocess.sh ../src/Template.js ../out/Template-browser.js "-DBROWSER" $MODE
+./preprocess.sh $MODE ../src/Template.js ../out/Template-helma.js '{ "helma": true, "rhino": true }'
+./preprocess.sh $MODE ../src/Template.js ../out/Template-rhino.js '{ "rhino": true }'
+./preprocess.sh $MODE ../src/Template.js ../out/Template-browser.js '{ "browser": true }'
